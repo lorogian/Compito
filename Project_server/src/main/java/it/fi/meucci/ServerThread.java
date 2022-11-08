@@ -1,5 +1,8 @@
 package it.fi.meucci;
 import java.net.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.*;
 class ServerThread extends Thread{
     ServerSocket server = null;
@@ -8,10 +11,11 @@ class ServerThread extends Thread{
     String stringMd=null;
     BufferedReader inDalClient;
     DataOutputStream outVersoClient;
-
-
-    public ServerThread(Socket s){
+    Messaggio mess;
+    String messaggino;
+    public ServerThread(Socket s,Messaggio mess){
         client=s;
+        this.mess=mess;
     }
 
     public void run(){
@@ -31,7 +35,11 @@ class ServerThread extends Thread{
                 break;
             }
             else{
-                outVersoClient.writeBytes(stringIn+" "+"stringa ricevuta e trasmessa"+"\n");
+
+                System.out.println(stringIn);
+                ObjectMapper objectMapper = new ObjectMapper();
+                String mioOggettoSerrializzato = objectMapper.writeValueAsString(mess);
+                outVersoClient.writeBytes(mioOggettoSerrializzato+"\n");
             }
         }
         outVersoClient.close();

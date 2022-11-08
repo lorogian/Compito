@@ -2,22 +2,35 @@ package it.fi.meucci;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 
 public class ClientStr {
     String name_server = "localhost";
     int serverport = 8080;
     Socket mysocket;
     BufferedReader keyboard;
-    String user =null;
+    String user = null;
     String received;
     DataOutputStream output;
     BufferedReader input;
+    Messaggio m = new Messaggio();
+    String messaggino;
+    String arraypieno;
+    public Socket connect() throws JsonGenerationException, JsonMappingException, IOException {
 
-    public Socket connect() {
         System.out.println("partito in esecuzione...");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        messaggino = objectMapper.writeValueAsString(m); // scrive dentro una string i parametri della classse
         try {
             keyboard = new BufferedReader(new InputStreamReader(System.in));
             mysocket = new Socket(name_server, serverport);
@@ -36,22 +49,48 @@ public class ClientStr {
     }
 
     public void comunicate() {
+        int a;
+       
         for (;;) {
             try {
-                System.out.println("inserisci string " + '\n');
-                user = keyboard.readLine();
-                System.out.println("mandato string to server");
+                /* 
+                do {
+
+                    System.out.println("inserisci num biglietto interessato n 1-5 " + '\n');
+                    user = keyboard.readLine();
+                    a = Integer.parseInt(user);
+                   
+                   // Messaggio mess_ser = objectMapper.readValue(a, Messaggio.class);
+
+
+                    m.getBiglietti().get(a - 1);
+
+                    System.out.println("vuoi un altro biglietto si o no" + '\n');
+                    user = keyboard.readLine();
+
+                } while (user.equals("si")); // verifica se interessa piu biglietti*/
+
+                System.out.println("mandato array voto to server" + messaggino);
+                output.writeBytes(messaggino + '\n'); // manda a lserver una string con elementi della classe messaggino
+
+                arraypieno = input.readLine();
+                System.out.println(arraypieno + '\n');
+
+
+                System.out.println("mandato biglietti to server");
                 output.writeBytes(user + '\n');
+                
+                
+            
                 received = input.readLine();
                 System.out.println("server risposta" + '\n' + received);
-                
+
                 if (user.equals("FINE")) {
                     System.out.println("CLIENT : execution ended");
                     mysocket.close();
                     break;
                 }
-                
-                
+
             } catch (Exception e) {
 
                 System.out.println(e.getMessage());

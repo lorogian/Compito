@@ -4,7 +4,12 @@
  import java.net.Socket;
  
  public class MultiServer {
-     public void avvio(){
+     Messaggio mess;
+     public MultiServer(Messaggio mess) {
+        this.mess=mess;
+    }
+
+    public void avvio(){
          try{
  
              ServerSocket server = new ServerSocket(8080);
@@ -12,7 +17,7 @@
                  System.out.println("server in attesa");
                  Socket socket=server.accept();
                  System.out.println("server  socket"+ socket);
-                 ServerThread serverTh =new ServerThread(socket);
+                 ServerThread serverTh =new ServerThread(socket,mess);
                  serverTh.start();
              }
         }catch(Exception e){
